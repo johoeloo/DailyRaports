@@ -38,16 +38,17 @@
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.dateTimePicker = new System.Windows.Forms.DateTimePicker();
-            this.cbNDF = new System.Windows.Forms.CheckBox();
-            this.cbPWC = new System.Windows.Forms.CheckBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.lblProductType = new System.Windows.Forms.Label();
+            this.btnListsOfFiles = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnCollectData
             // 
-            this.btnCollectData.Location = new System.Drawing.Point(32, 94);
-            this.btnCollectData.Margin = new System.Windows.Forms.Padding(4);
+            this.btnCollectData.Location = new System.Drawing.Point(24, 76);
             this.btnCollectData.Name = "btnCollectData";
-            this.btnCollectData.Size = new System.Drawing.Size(130, 28);
+            this.btnCollectData.Size = new System.Drawing.Size(117, 25);
             this.btnCollectData.TabIndex = 0;
             this.btnCollectData.Text = "zbierz raporty";
             this.btnCollectData.UseVisualStyleBackColor = true;
@@ -56,19 +57,17 @@
             // lblDate
             // 
             this.lblDate.AutoSize = true;
-            this.lblDate.Location = new System.Drawing.Point(12, 22);
-            this.lblDate.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblDate.Location = new System.Drawing.Point(9, 18);
             this.lblDate.Name = "lblDate";
-            this.lblDate.Size = new System.Drawing.Size(86, 17);
+            this.lblDate.Size = new System.Drawing.Size(66, 13);
             this.lblDate.TabIndex = 1;
             this.lblDate.Text = "data danych";
             // 
             // btnSplitData
             // 
-            this.btnSplitData.Location = new System.Drawing.Point(31, 130);
-            this.btnSplitData.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSplitData.Location = new System.Drawing.Point(23, 106);
             this.btnSplitData.Name = "btnSplitData";
-            this.btnSplitData.Size = new System.Drawing.Size(130, 28);
+            this.btnSplitData.Size = new System.Drawing.Size(117, 25);
             this.btnSplitData.TabIndex = 3;
             this.btnSplitData.Text = "podziel raporty";
             this.btnSplitData.UseVisualStyleBackColor = true;
@@ -76,10 +75,9 @@
             // 
             // btnZipData
             // 
-            this.btnZipData.Location = new System.Drawing.Point(32, 166);
-            this.btnZipData.Margin = new System.Windows.Forms.Padding(4);
+            this.btnZipData.Location = new System.Drawing.Point(23, 164);
             this.btnZipData.Name = "btnZipData";
-            this.btnZipData.Size = new System.Drawing.Size(130, 28);
+            this.btnZipData.Size = new System.Drawing.Size(117, 25);
             this.btnZipData.TabIndex = 4;
             this.btnZipData.Text = "zipuj";
             this.btnZipData.UseVisualStyleBackColor = true;
@@ -87,10 +85,9 @@
             // 
             // btnCreateDrafts
             // 
-            this.btnCreateDrafts.Location = new System.Drawing.Point(32, 202);
-            this.btnCreateDrafts.Margin = new System.Windows.Forms.Padding(4);
+            this.btnCreateDrafts.Location = new System.Drawing.Point(23, 193);
             this.btnCreateDrafts.Name = "btnCreateDrafts";
-            this.btnCreateDrafts.Size = new System.Drawing.Size(130, 28);
+            this.btnCreateDrafts.Size = new System.Drawing.Size(117, 25);
             this.btnCreateDrafts.TabIndex = 5;
             this.btnCreateDrafts.Text = "przygotuj maile";
             this.btnCreateDrafts.UseVisualStyleBackColor = true;
@@ -99,70 +96,93 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(169, 94);
+            this.label1.Location = new System.Drawing.Point(153, 85);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(0, 17);
+            this.label1.Size = new System.Drawing.Size(0, 13);
             this.label1.TabIndex = 6;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(168, 130);
+            this.label2.Location = new System.Drawing.Point(152, 115);
+            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(0, 17);
+            this.label2.Size = new System.Drawing.Size(0, 13);
             this.label2.TabIndex = 7;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(169, 166);
+            this.label3.Location = new System.Drawing.Point(152, 173);
+            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(0, 17);
+            this.label3.Size = new System.Drawing.Size(0, 13);
             this.label3.TabIndex = 8;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(169, 202);
+            this.label4.Location = new System.Drawing.Point(152, 202);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(0, 17);
+            this.label4.Size = new System.Drawing.Size(0, 13);
             this.label4.TabIndex = 9;
             // 
             // dateTimePicker
             // 
-            this.dateTimePicker.Location = new System.Drawing.Point(115, 22);
+            this.dateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dateTimePicker.Location = new System.Drawing.Point(86, 18);
+            this.dateTimePicker.Margin = new System.Windows.Forms.Padding(2);
             this.dateTimePicker.Name = "dateTimePicker";
-            this.dateTimePicker.Size = new System.Drawing.Size(200, 22);
+            this.dateTimePicker.Size = new System.Drawing.Size(151, 20);
             this.dateTimePicker.TabIndex = 12;
             this.dateTimePicker.Value = new System.DateTime(2019, 1, 21, 12, 0, 16, 0);
             // 
-            // cbNDF
+            // progressBar1
             // 
-            this.cbNDF.AutoSize = true;
-            this.cbNDF.Location = new System.Drawing.Point(358, 12);
-            this.cbNDF.Name = "cbNDF";
-            this.cbNDF.Size = new System.Drawing.Size(127, 21);
-            this.cbNDF.TabIndex = 13;
-            this.cbNDF.Text = "uwzględnij NDF";
-            this.cbNDF.UseVisualStyleBackColor = true;
+            this.progressBar1.Location = new System.Drawing.Point(268, 76);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(100, 23);
+            this.progressBar1.TabIndex = 15;
+            this.progressBar1.Visible = false;
             // 
-            // cbPWC
+            // lblProductType
             // 
-            this.cbPWC.AutoSize = true;
-            this.cbPWC.Location = new System.Drawing.Point(358, 42);
-            this.cbPWC.Name = "cbPWC";
-            this.cbPWC.Size = new System.Drawing.Size(130, 21);
-            this.cbPWC.TabIndex = 14;
-            this.cbPWC.Text = "uwzględnij PWC";
-            this.cbPWC.UseVisualStyleBackColor = true;
+            this.lblProductType.AutoSize = true;
+            this.lblProductType.Location = new System.Drawing.Point(268, 57);
+            this.lblProductType.Name = "lblProductType";
+            this.lblProductType.Size = new System.Drawing.Size(0, 13);
+            this.lblProductType.TabIndex = 16;
+            // 
+            // btnListsOfFiles
+            // 
+            this.btnListsOfFiles.Location = new System.Drawing.Point(23, 135);
+            this.btnListsOfFiles.Name = "btnListsOfFiles";
+            this.btnListsOfFiles.Size = new System.Drawing.Size(117, 25);
+            this.btnListsOfFiles.TabIndex = 17;
+            this.btnListsOfFiles.Text = "stwórz listy plików";
+            this.btnListsOfFiles.UseVisualStyleBackColor = true;
+            this.btnListsOfFiles.Click += new System.EventHandler(this.btnListsOfFiles_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(152, 143);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(0, 13);
+            this.label5.TabIndex = 18;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(512, 271);
-            this.Controls.Add(this.cbPWC);
-            this.Controls.Add(this.cbNDF);
+            this.ClientSize = new System.Drawing.Size(474, 235);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.btnListsOfFiles);
+            this.Controls.Add(this.lblProductType);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.dateTimePicker);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -173,7 +193,6 @@
             this.Controls.Add(this.btnSplitData);
             this.Controls.Add(this.lblDate);
             this.Controls.Add(this.btnCollectData);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Form1";
             this.Text = "DOK - raporty dzienne";
             this.ResumeLayout(false);
@@ -193,8 +212,10 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DateTimePicker dateTimePicker;
-        private System.Windows.Forms.CheckBox cbNDF;
-        private System.Windows.Forms.CheckBox cbPWC;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label lblProductType;
+        private System.Windows.Forms.Button btnListsOfFiles;
+        private System.Windows.Forms.Label label5;
     }
 }
 

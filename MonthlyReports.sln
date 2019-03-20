@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2050
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DailyRaports", "DailyRaports.csproj", "{FB8ABCF4-3567-44F5-89BB-699720081F16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonthlyReports", "MonthlyReports.csproj", "{FB8ABCF4-3567-44F5-89BB-699720081F16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {03812C9A-BF9D-4904-8D75-EB9A463B1AFC}
+		SolutionGuid = {DCDCF556-E3A5-4C17-A36E-F480DB1E421F}
 	EndGlobalSection
 EndGlobal

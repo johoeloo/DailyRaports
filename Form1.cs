@@ -9,48 +9,41 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.IO.Compression;
+using System.Reflection;
 
 namespace DailyReports
 {
     public partial class Form1 : Form
     {
         DateTime Now;
-        DateTime YesterdayOrFriday;
-        DateTime Yesterday;
-        
+
         string folderName;
         string Year;
-        string YearMonth;
-        string folderNamePL;
-        string folderNameBOL;
+        string MonthPl;
         string dirMain;
         List<List<ProductClassification>> fo;
+        List<List<string>> fo2;
         List<ProductClassification> Mails;
-        List<string> ToOmit;
         List<ProductClassification> CopyTo;
         List<string> Products;
+        List<string> EncryptionZip;
+
+        List<string> ProductsWithPiToOmit;
+        List<string> ProductsProv;
         FoldersOperations ExcelProductsInfo = new FoldersOperations();
         List<ProductClassification> MailsWithAttachment;
         string CopyFolder;
-        string fNamePrev, fName, ProductCode;
-        string fNameShort = "";
+        string fNamePrev, fName;
 
         public Form1()
         {
-            fo = ExcelProductsInfo.ReadExcelFile(@"\\fs1ol\Programy$\OL_Raporty\Raporty_DZOK\DodatkoweInformacje_RaportyDzienne.xlsx");
-            MailsWithAttachment = fo.ElementAt(0); // list of mails that have attachments and distributors
-
-            //Lists with data
-            ToOmit = fo.ElementAt(1).Select(item => item.ProductCode).ToList(); // list of raports to ignore
-            CopyTo = fo.ElementAt(2); // information about products target folders
-            Mails = fo.ElementAt(3); // list of mails and distributors
-            Products = CopyTo.Select(o => o.ProductCode).Distinct().ToList(); //list of products that have pinpointed folders
             Now = DateTime.Now;
 
             InitializeComponent();
 
             //default data = now
             dateTimePicker.Text = Now.ToString();
+            dateTimePicker.CustomFormat = "d MMMM yyyy";
         }
 
 
@@ -60,44 +53,66 @@ namespace DailyReports
         private void btnCollectData_Click(object sender, EventArgs e)
         {
             Now = Convert.ToDateTime(dateTimePicker.Text);
+            int step = 0;
+            lblProductType.Text = "Tworzenie struktury folderów...";
+            Refresh();
+
+            Year = Now.ToString("yyyy");
+            PrepareData pd = new PrepareData();
+            MonthPl = pd.month_pl(Now);
+            int countCopied = 0;
+            int lp = Now.Month + Now.Year - 2019;
+
+            fo = ExcelProductsInfo.ReadExcelFile(@"\\fs1ol\Programy$\OL_Raporty\Raporty_DZOK\DodatkoweInformacje_RaportyMiesieczne.xlsx", Now.ToString("yyyyMM"));
+
+            //Lists with data
+            MailsWithAttachment = fo.ElementAt(0); // list of mails that have attachments and distributors
+            CopyTo = fo.ElementAt(1); // information about products target folders
+            Mails = fo.ElementAt(2); // list of mails and distributors
+            Products = CopyTo.Select(o => o.ProductCode).Distinct().ToList(); //list of products that have pinpointed folders
+
+
+            fo2 = ExcelProductsInfo.ReadCommissionRestriction(@"C:\Users\jmajcher\Desktop\Miesieczne_DOK\DodatkoweInformacje_RaportyMiesieczne.xlsx", Now.ToString("yyyyMM"));
+            ProductsWithPiToOmit = fo2.ElementAt(0); //products code where is no need to clear personal data
+            ProductsProv = fo2.ElementAt(1); // products name where personal data needs to be removed
+
+            EncryptionZip = ExcelProductsInfo.ReadCEncryptionFolders(@"C:\Users\jmajcher\Desktop\Miesieczne_DOK\DodatkoweInformacje_RaportyMiesieczne.xlsx", Now.ToString("yyyyMM"));
+
             //----------------------------- create folders structure --------------------------------------
 
-            dirMain = @"P:\OL_Raporty\Raporty_DZOK\" +  Now.ToString("yyyyMMdd"); 
+            dirMain = @"P:\OL_Raporty\Raporty_DZOK\RAPORTY MIESIĘCZNE\"+ lp + "." + MonthPl + " " + Year + "\\Prowizje_wysyłka_" + Now.ToString("yyyyMM");
             Directory.CreateDirectory(dirMain); // create folder for new day
             ExcelProductsInfo.CreateFolders(CopyTo, dirMain); //create folders structure
 
+
             //----------------------------- copy all xlsx / xls to main folder ------------------------------------
-            Yesterday = Now.AddDays(-1);
-            YesterdayOrFriday = (Now.DayOfWeek == DayOfWeek.Monday) ? Now.AddDays(-3) : Yesterday;
 
-            folderName = Now.ToString("yyyyMMdd") + @"\";
-            Year = Now.ToString("yyyy") + @"\";
-            YearMonth = Now.ToString("yyyyMM") + @"\";
-            folderNamePL = YesterdayOrFriday.ToString("yyyyMMdd") + @"\";
-            folderNameBOL = Yesterday.ToString("yyyyMMdd") + @"\";
-
-            int countCopied = 0;
 
             //Defines paths to copy from
             string[] CopyFrom = {
-                                @"\\fs1ol\Programy$\Pentalife\Korespondencja\Raporty\" + folderNamePL, // Pentalife
-                                @"\\fs1ol\Zasoby$\DWS_DOK_DOR\Raporty\Spektrum_Życia\" + Year + YearMonth + folderName, // SpektrumZycia
-                                @"\\fs1ol\Zasoby$\DWS_DOK_DOR\Raporty\Zwrotka\" + Year +  YearMonth + folderName, // Zwrotka
-                                @"\\fs1ol\Zasoby$\DWS_DOK_DOR\Raporty\Pomoc_w_Chorobie\" + Year +YearMonth + folderName, //PomocWChorobie
-                                @"\\fs1ol\Zasoby$\DWS_DOK_DOR\Raporty\Pod_Kątem_Przyszłości\" + Year + YearMonth + folderName, //Pod Katem Przyszlosci
-                                @"\\fs1ol\Zasoby$\DWS_DOK_DOR\Raporty\Dziesiątka\" + Year +YearMonth + folderName, //Dziesiatka
-                                @"\\fs1ol\Zasoby$\DWS_DOK_DOR\Raporty\Plan_Pewnej_Ochrony\" + Year+ YearMonth + folderName, //Plan Pewnej Ochrony
-                                @"\\fs1ol\Zasoby$\DWS_DOK_DOR\Raporty\Pod_Kątem_Przyszłości\" + Year + YearMonth + folderName, //Plan Na Pewna Przyszlosc
-                                @"\\fs1ol\Programy$\OL_Raporty\BOL_PROD\" + folderNameBOL //BOL_PROD
+                                @"P:\OL_Raporty\Raporty_DZOK\RAPORTY MIESIĘCZNE\" + lp + "." + MonthPl + " " + Year + @"\Ochronne\",
+                                //@"P:\OL_Raporty\Raporty_DZOK\RAPORTY MIESIĘCZNE\" + lp + "." + MonthPl + " " + Year + @"\Inwestycyjne\",
+                                @"P:\OL_Raporty\Rejestrator\" + Now.ToString("yyyyMMdd"),
                                 };
 
             IEnumerable<string> dir;
+            bool PersonalInfo;
+
+            progressBar1.Visible = true;
+            Refresh();
 
             //copy all the data from folders
             for (int i = 0; i < CopyFrom.Length; i++)
             {
                 dir = null;
                 CopyFolder = CopyFrom[i];
+                
+                //check if folder needs to be cleared from personal infromation
+                PersonalInfo = false;
+                if (CopyFolder.Contains("Inwestycyjne") == true)
+                {
+                    PersonalInfo = true;
+                }
 
                 //if directory does not exists show messgae box and continue
                 try
@@ -106,50 +121,77 @@ namespace DailyReports
                 }
                 catch (DirectoryNotFoundException dirEx)
                 {
-                    MessageBox.Show(dirEx.Message,"Błąd! Ścieżka nieznaleziona!");
+                    MessageBox.Show(dirEx.Message,"Błąd! Ścieżka " + CopyFrom[i] + " nieznaleziona!");
                     continue;
                 }
 
+                //information for user (on the Form)
                 if (dir != null)
                 {
+                    if (CopyFolder.Contains("Inwestycyjne") == true)
+                        lblProductType.Text = "Inwestycyjne";
+                    else if (CopyFolder.Contains("Rejestrator") == true)
+                        lblProductType.Text = "Rejestrator";
+                    else
+                        lblProductType.Text = "Ochronne";
+                    Refresh();
+
+                    progressBar1.Value = 0;
+                    progressBar1.Maximum = dir.Count();
+                    progressBar1.Minimum = 0;
+                    progressBar1.Step = 1;
+
                     //copy files from directory
                     foreach (var file in dir)
                     {
-                        fNamePrev = fNameShort;
+                        fNamePrev = fName;
                         fName = file.Replace(CopyFolder, "");
-                        fNameShort = fName.Split('_')[0] + fName.Split('_')[1];
-                        ProductCode = fName.Split('_')[0];
 
-                        if (!ToOmit.Any(fName.Contains) && Products.Any(ProductCode.Equals)) //omit some of the files, chose only with specific product code
+                        if (fNamePrev != fName ) // checks if product has already been copied
                         {
-                            if (fNamePrev != fNameShort) // checks if product has already been copied
+                            File.Copy(file, dirMain + '\\' + fName, true);
+                            countCopied = countCopied + 1;
+
+                            //remove personal infrormation
+                            if (PersonalInfo == true && !ProductsWithPiToOmit.Any(fName.Contains))
                             {
-                                File.Copy(file, dirMain + '\\' + fName, true);
-                                countCopied = countCopied + 1;
+                                pd.RemovePersonalData(dirMain + '\\' + fName, fo2.ElementAt(2));
                             }
                         }
+                        step += 1;
+                        progressBar1.PerformStep();
+                        Refresh();
                     }
                 }
             }
+            progressBar1.Visible = false;
+            lblProductType.Text = "";
             label1.Text = "liczba przekopiowanych raportow: " + countCopied;
+            Refresh();
         }
 
         /// <summary>
-        /// Splits xlsx and xls to folders
+        /// Splits files to folders
         /// </summary>
         private void btnSplitData_Click(object sender, EventArgs e)
         {
             DirectoryInfo dir = new DirectoryInfo(dirMain);
             string dirFile;
-            string fProductCode;
             int countCopied = 0;
-            foreach (var file in dir.GetFiles("*.xls*"))
+            List<string> paths = new List<string>();
+
+            foreach (var file in dir.GetFiles())
             {
                 // find file folder
                 fName = file.Name.Replace(dirMain, "");
-                fProductCode = fName.Split('_')[0];
-                
-                var paths = CopyTo.Where(item => item.ProductCode == fProductCode).Select(item => item.Path).Distinct().ToList();
+
+                foreach (var item in CopyTo)
+                {
+                    if (fName.Contains(item.ProductCode))
+                    {
+                        paths.Add(item.Path);
+                    }
+                }
 
                 //path to file
                 for (int i = 0; i < paths.Count; i++)
@@ -157,14 +199,52 @@ namespace DailyReports
                     dirFile = dirMain + "\\" + paths.ElementAt(i) + "\\" + fName;
 
                     //if file exists then move
-                    if (!File.Exists(dirFile))
+                    if (!File.Exists(dirFile) && File.Exists(file.FullName))
                     {
                         Directory.Move(file.FullName, dirFile);
                         countCopied = countCopied + 1;
                     }
                 }
+                paths.Clear();
             }
+
             label2.Text = "raporty rozdzielone, rozdzielono " + countCopied + " raportow";
+        }
+
+        /// <summary>
+        /// Creates txt files with lists of folders in directory
+        /// </summary>
+        private void btnListsOfFiles_Click(object sender, EventArgs e)
+        {
+            DirectoryInfo dir = new DirectoryInfo(dirMain + "\\");
+            DirectoryInfo subDir;
+            string[] subfolders = Directory.GetDirectories(dir.ToString());
+            string str = "";
+            int countCopied = 0;
+
+            // find all subfolders in directory
+            foreach (var directory in subfolders)
+            {
+                str = "";
+                subDir = new DirectoryInfo(directory);
+
+                //read files names in subfolder
+                foreach (FileInfo raport in subDir.GetFiles())
+                {
+                    str = str + raport + ", ";
+                }
+
+                if (str.Length == 0)
+                {
+                    str = "brak plikow   ";
+                }
+
+                //create txt file with files list
+                str = "Lista plikow: " + str.Substring(0, str.Length - 2);
+                File.WriteAllText(subDir +  ".txt", str);
+                countCopied = countCopied + 1;
+            }
+            label5.Text = "listy plikow wygenerowane, storzono " + countCopied + " list txt";
         }
 
 
@@ -176,15 +256,46 @@ namespace DailyReports
             int countZiped= 0;
             DirectoryInfo dir = new DirectoryInfo(dirMain+"\\");
 
+            //use seven zip library to create zips with password
+            SevenZip.SevenZipBase.SetLibraryPath((Assembly.GetEntryAssembly().Location).Replace(Assembly.GetEntryAssembly().FullName.Split(',')[0] + ".exe", "7za.dll"));
+            SevenZip.SevenZipCompressor compressor = new SevenZip.SevenZipCompressor();
+
+            string password = MonthPl.Substring(0, 1).ToUpper() + MonthPl.Substring(1, MonthPl.Length-1).ToLower() + Year.Substring(2,2) + "_OL";
+            string destinationFile = "";
+            string[] sourceFiles;
+
             //zip files in folder
             foreach (var file in dir.GetDirectories())
             {
-                ZipFile.CreateFromDirectory(dirMain+ "\\"+ file.ToString(), dirMain + "\\" + file.ToString()+".zip");
-                countZiped = countZiped + 1;
+                destinationFile = dirMain +"\\" + file.ToString() + ".zip";
+                sourceFiles = Directory.GetFiles(dirMain + "\\" + file.ToString());
+
+                try
+                {
+                    //if file on EncryptionZip list, create zip with password
+                    if (EncryptionZip.Any(destinationFile.Contains))
+                    {
+                       
+                        compressor.EncryptHeaders = true;
+                        compressor.CompressFilesEncrypted(destinationFile, password, sourceFiles);
+                    }
+                    else
+                    {
+                        compressor.CompressFiles(destinationFile, sourceFiles);
+
+                    }
+                    countZiped = countZiped + 1;
+                }
+                catch (ArgumentOutOfRangeException dirEx)
+                {
+                    MessageBox.Show("Folder " + dirMain + "\\" + file.ToString() + " jest pusty!" + "\n" + "\n" + "Nie został swtorzony zip dla tego folderu! "+ "\n" + "\n" +"\n" + "("+dirEx +")" , "Błąd! indeks poza zakresem");
+                    continue;
+                }
             }
 
             label3.Text = "utworzono " + countZiped + " plików zip";
         }
+
 
         /// <summary>
         /// Prepares drafts in Outlook
@@ -197,32 +308,19 @@ namespace DailyReports
 
             var mail = new CreateMail();
 
-            //check box for pwc
-            if (cbPWC.Checked == false)
-            {
-                Mails = Mails.Where(x => x.Path.ToLower().Substring(0, 3) != "pwc").ToList();
-                MailsWithAttachment= MailsWithAttachment.Where(x => x.Path.ToLower().Substring(0,3) != "pwc").ToList();
-            }
-
-            //check box for NDF
-            if (cbNDF.Checked == false)
-            {
-                Mails = Mails.Where(x => x.Path.ToLower().Substring(0, 3) != "ndf").ToList();
-                MailsWithAttachment= MailsWithAttachment.Where(x => x.Path.ToLower().Substring(0, 3) != "ndf").ToList();
-            }
 
             for (int i = 0; i < Mails.Count; i++) //drafts without attachments
             {
                 MailTo = Mails.ElementAt(i).ProductCode.Split('/')[0];
                 Template = Mails.ElementAt(i).ProductCode.Split('/')[1];
-                mail.Draft(MailTo, Template, CC);
+                mail.Draft(MailTo, Template, CC, MonthPl + " " + Year);
             }
 
             for (int i = 0; i < MailsWithAttachment.Count; i++) //drafts with attachments
             {
                 MailTo = MailsWithAttachment.ElementAt(i).ProductCode.Split('/')[0];
                 Template = MailsWithAttachment.ElementAt(i).ProductCode.Split('/')[1];
-                mail.Draft(MailTo, Template, CC, dirMain + "\\" + MailsWithAttachment.ElementAt(i).Path + ".zip");
+                mail.Draft(MailTo, Template, CC, MonthPl+ " " + Year, dirMain + "\\" + MailsWithAttachment.ElementAt(i).Path + ".zip");
             }
             label4.Text = "kopie robocze utworzone";
 
